@@ -20,7 +20,11 @@ public class SnakeGame extends JPanel {
     int boardWidth;
     int boardHeight;
     int tileSize = 25;
+
+    //Snake
     Tile snakeHead;
+
+    // you can resume working from here. Video was at minute 15.
 
     SnakeGame(int boardWidth, int boardHeight) {
         this.boardWidth = boardWidth;
