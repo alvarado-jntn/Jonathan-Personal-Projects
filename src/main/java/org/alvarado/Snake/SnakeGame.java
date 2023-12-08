@@ -6,10 +6,45 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 
-public class SnakeGame extends JPanel implements ActionListener{
+public class SnakeGame extends JPanel implements ActionListener, KeyListener {
+    public void move() {
+        // Snake Head
+        snakeHead.x += velocityX;
+        snakeHead.y += velocityY;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+        move();
         repaint();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            velocityX = 0;
+            velocityY = -1;
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            velocityX = 0;
+            velocityY = 1;
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            velocityX = -1;
+            velocityY = 0;
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            velocityX = 1;
+            velocityY = 0;
+        }
+    }
+
+    // We do not need the below methods. We do not need keyTyped or keyReleased
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 
     private class Tile {
@@ -36,13 +71,15 @@ public class SnakeGame extends JPanel implements ActionListener{
 
     // Game Logic
     Timer gameLoop;
+    int velocityX;
+    int velocityY;
 
     SnakeGame(int boardWidth, int boardHeight) {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
-
         setPreferredSize(new Dimension(this.boardWidth, this.boardHeight));
         setBackground(Color.BLACK);
+        addKeyListener(this);
 
         snakeHead = new Tile(5, 5);
 
@@ -50,7 +87,10 @@ public class SnakeGame extends JPanel implements ActionListener{
         random = new Random();
         placeFood();
 
-        gameLoop = new Timer(100,this); // Delay is in milliseconds.
+        velocityX = 0;
+        velocityY = 0;
+
+        gameLoop = new Timer(100, this); // Delay is in milliseconds.
         gameLoop.start();
 
     }
@@ -78,9 +118,9 @@ public class SnakeGame extends JPanel implements ActionListener{
         g.fillRect(snakeHead.x * tileSize, snakeHead.y * tileSize, tileSize, tileSize);
     }
 
-    public void placeFood(){
+    public void placeFood() {
         // This will randomly place the coordinates of the food.
-        food.x = random.nextInt(boardWidth/tileSize); // 600/25 = 24
-        food.y = random.nextInt(boardHeight/tileSize); // 600/25 = 24
+        food.x = random.nextInt(boardWidth / tileSize); // 600/25 = 24
+        food.y = random.nextInt(boardHeight / tileSize); // 600/25 = 24
     }
 }
