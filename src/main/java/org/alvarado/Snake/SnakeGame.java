@@ -8,6 +8,28 @@ import javax.swing.*;
 
 public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     public void move() {
+        // Eat Food
+        if (collision(snakeHead, food)) {
+            snakeBody.add(new Tile(food.x, food.y));
+            placeFood();
+        }
+
+        // Snake Body - this needs to move first, we will be
+        // we need to make sure the body moves before the head. If we move the head first, then the first
+        // tile will not know where to go.
+        // We will iterate in reverse. Each tile needs to catch up to the one before it before the snake had can move.
+        for (int i = snakeBody.size() - 1; i >= 0; i--) {
+            Tile snakePart = snakeBody.get(i);
+            if (i==0){
+                snakePart.x = snakeHead.x;
+                snakePart.y = snakeHead.y;
+            } else{
+                Tile prevSnakePart = snakeBody.get(i-1);
+                snakePart.x = prevSnakePart.x;
+                snakePart.y = prevSnakePart.y;
+            }
+        }
+
         // Snake Head
         snakeHead.x += velocityX;
         snakeHead.y += velocityY;
@@ -63,6 +85,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
     //Snake
     Tile snakeHead;
+    ArrayList<Tile> snakeBody;
 
     // Food
     Tile food;
@@ -83,6 +106,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
 
         snakeHead = new Tile(5, 5);
+        snakeBody = new ArrayList<Tile>();
 
         food = new Tile(10, 10);
         random = new Random();
@@ -114,14 +138,24 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         g.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
 
 
-        // Snake
+        // Snake Head
         g.setColor(Color.green);
         g.fillRect(snakeHead.x * tileSize, snakeHead.y * tileSize, tileSize, tileSize);
+
+        // Snake Body
+        for (int i = 0; i < snakeBody.size(); i++) {
+            Tile snakePart = snakeBody.get(i);
+            g.fillRect(snakePart.x * tileSize, snakePart.y * tileSize, tileSize, tileSize);
+        }
     }
 
     public void placeFood() {
         // This will randomly place the coordinates of the food.
         food.x = random.nextInt(boardWidth / tileSize); // 600/25 = 24
         food.y = random.nextInt(boardHeight / tileSize); // 600/25 = 24
+    }
+
+    public boolean collision(Tile tile1, Tile tile2) {
+        return tile1.x == tile2.x && tile1.y == tile2.y;
     }
 }
