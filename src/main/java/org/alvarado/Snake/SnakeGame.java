@@ -20,11 +20,11 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         // We will iterate in reverse. Each tile needs to catch up to the one before it before the snake had can move.
         for (int i = snakeBody.size() - 1; i >= 0; i--) {
             Tile snakePart = snakeBody.get(i);
-            if (i==0){
+            if (i == 0) {
                 snakePart.x = snakeHead.x;
                 snakePart.y = snakeHead.y;
-            } else{
-                Tile prevSnakePart = snakeBody.get(i-1);
+            } else {
+                Tile prevSnakePart = snakeBody.get(i - 1);
                 snakePart.x = prevSnakePart.x;
                 snakePart.y = prevSnakePart.y;
             }
@@ -33,12 +33,33 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         // Snake Head
         snakeHead.x += velocityX;
         snakeHead.y += velocityY;
+
+        //game over conditions
+        //does the snake collide with its own body?
+        for (int i = 0; i < snakeBody.size(); i++) {
+            Tile snakePart = snakeBody.get(i);
+            // Check if there is collision with the snake head and the snake body.
+            if (collision(snakeHead, snakePart)) {
+                gameOver = true;
+            }
+        }
+
+        // does the snake collide with one of the 4 walls?
+        if (snakeHead.x * tileSize < 0 || snakeHead.x * tileSize > boardWidth ||
+                snakeHead.y * tileSize < 0 || snakeHead.y * tileSize > boardHeight) {
+
+            gameOver = true;
+        }
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         move();
         repaint();
+        if (gameOver) {
+            gameLoop.stop();
+        }
     }
 
     @Override
@@ -96,6 +117,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     Timer gameLoop;
     int velocityX;
     int velocityY;
+    boolean gameOver = false;
 
     SnakeGame(int boardWidth, int boardHeight) {
         this.boardWidth = boardWidth;
